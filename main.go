@@ -9,20 +9,23 @@ import (
 	"strings"
 )
 
+var homeDir = ""
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-	err := os.Chdir("~")
+	var err error
+	homeDir, err = os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.Chdir(homeDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for {
-		cwd, err := os.Getwd()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("%s > ", cwd)
+		printPath()
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -56,4 +59,17 @@ func processCommand(command string) error {
 	cmd.Stdout = os.Stdout
 
 	return cmd.Run()
+}
+
+func printPath() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if strings.HasPrefix(cwd, homeDir) {
+		cwd = "~" + cwd[len(homeDir):]
+	}
+
+	fmt.Printf("%s> ", cwd)
 }
