@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,8 +11,18 @@ import (
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+	err := os.Chdir("~")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for {
-		fmt.Print("> ")
+		cwd, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("%s > ", cwd)
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
